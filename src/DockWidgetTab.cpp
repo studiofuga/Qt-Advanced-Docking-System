@@ -564,6 +564,23 @@ void CDockWidgetTab::contextMenuEvent(QContextMenuEvent* ev)
 	{
 		Action = Menu.addAction(tr("Close Others"), this, SIGNAL(closeOtherTabsRequested()));
 	}
+
+    if (CDockManager::testConfigFlag(CDockManager::ShowPerspectivesInContextMenu)) {
+        auto perspectives = d->DockArea->dockManager()->perspectiveNames();
+        if (perspectives.count() > 0)
+        {
+            Menu.addSeparator();
+            for (auto p : perspectives)
+            {
+                Action = new QAction(p);
+                connect(Action, &QAction::triggered, this, [this, p]() {
+                    d->DockArea->dockManager()->openPerspective(p);
+                });
+                Menu.addAction(Action);
+            }
+        }
+    }
+
 	Menu.exec(ev->globalPos());
 }
 
